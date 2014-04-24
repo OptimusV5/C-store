@@ -2,63 +2,77 @@
 #include <cstring>
 
 load::load() {
-    for (int i = 0; i < 4; i++)
-		page_int[i] = NULL;
-	page_dec = NULL;
-	fPtr = NULL;
+	
 	strcpy(file_name[0] , "orderkey.fjl");
 	strcpy(file_name[1] , "custkey.fjl");
 	strcpy(file_name[2] , "shippriority.fjl");
 	strcpy(file_name[3] , "totalprice.fjl");
+    for (int i = 0; i < 4; i++) {
+		page_int[i] = NULL;
+	    fOut[i] = NULL;
+	}
+	page_dec = NULL;
+	fIn = NULL;	
 	fWork();
 }
-
 void load::fRead() {
-
-	for (int j = 0; j < 2048; j++) {
-		for (int i = 0; i < 4; i++) {
-			if (i != 2)
-				fscanf(fPtr, "%d", &page_int[i][j]);
-		    else
-				fscanf(fPtr, "%lf", &page_dec[j]);
-            fSeek(i);
-			if (feof(fPtr))
-				return;
+    char sTemp[200];
+	for (int i = 0; i < 2048; i++) {
+	    if (!fgets(sTemp,200,fIn))
+			return;
+		int num = 0;
+		char *temp;
+		temp = strtok(sTemp,"|");
+        page_int[0][i] = atoi(temp);
+		num++;
+		while (temp != NULL) {
+		    temp = strtok(NULL,"|");
+            if (num == 1)
+				page_int[1][i] = atoi(temp);
+			if (num == 3)
+				page_dec[i] = atof(temp);
+			if (num == 7) {
+				page_int[3][i] = atoi(temp);
+			    break;
+			}
+			num++;
 		}
 	}
 }
 
 void load::fWrite() {
 	for (int i = 0; i < 4; i++) {
-	    FILE *f = fopen(file_name[i],"ab");
+	   // FILE *f = fopen(file_name[i],"ab");
 		if (i != 2)
-			fwrite(page_int[i], sizeof(int), 2048, f);
+			fwrite(page_int[i], sizeof(int), 2048, fOut[i]);
 		else
-			fwrite(page_dec, sizeof(double), 2048, f);
+			fwrite(page_dec, sizeof(double), 2048, fOut[i]);
 	}
 }
 
-void load::fSeek(int i) {
+/*void load::fSeek(int i) {
 	if (i == 0)
-		fseek(fPtr, 1L, SEEK_CUR);
+		fseek(fIn, 1L, SEEK_CUR);
     if (i == 1)
-		fseek(fPtr, 3L, SEEK_CUR);
+		fseek(fIn, 3L, SEEK_CUR);
 	if (i == 2)
-		fseek(fPtr, 44L, SEEK_CUR);
+		fseek(fIn, 44L, SEEK_CUR);
 	if (i == 3) {
 	    char sTemp[80];
-	    fgets(sTemp, 80, fPtr);
+	    fgets(sTemp, 80, fIn);
 	}
-}
+}*/
 void load::fWork() {
-	fPtr = fopen("orders.tbl","rt");
-    while(!feof(fPtr)) {
+	fIn = fopen("orders.tbl","rt");
+	for (int i = 0; i < 4; i++)
+		fOut[i] = fopen(file_name[i],"wb");
+	while(!feof(fIn)) {
 		for (int i = 0; i < 4; i++) {
 			if (i != 2)
 			page_int[i] = new int[2048];
 		}
 		page_dec = new double[2048];
-	    fRead();
+		fRead();
 		fWrite();
 		for (int i = 0; i < 4; i++) {
 		    if (i != 2) {
@@ -70,7 +84,9 @@ void load::fWork() {
 			}
 		}
 	}
-	fclose(fPtr);
+	fclose(fIn);
+	for (int i = 0; i < 4; i++)
+		fclose(fOut[i]);
 }
 
 load::~load() {
