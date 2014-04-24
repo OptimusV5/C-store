@@ -16,6 +16,7 @@ private:
 	double *page_dec;
 	FILE *fIn;
         FILE *fOut[4];
+ 	FILE *fPtr;
 	char file_name[4][20];
 };
 #endif

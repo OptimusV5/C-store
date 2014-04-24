@@ -12,7 +12,8 @@ load::load() {
 	    fOut[i] = NULL;
 	}
 	page_dec = NULL;
-	fIn = NULL;	
+	fIn = NULL;
+	fPtr = NULL;	
 	fWork();
 }
 void load::fRead() {
@@ -24,6 +25,8 @@ void load::fRead() {
 		char *temp;
 		temp = strtok(sTemp,"|");
         page_int[0][i] = atoi(temp);
+		if (i == 0)
+			fwrite(page_int[0],sizeof(int),1,fPtr);
 		num++;
 		while (temp != NULL) {
 		    temp = strtok(NULL,"|");
@@ -63,9 +66,12 @@ void load::fWrite() {
 	}
 }*/
 void load::fWork() {
+	fPtr = fopen("index.fjl","wb");
 	fIn = fopen("orders.tbl","rt");
 	for (int i = 0; i < 4; i++)
 		fOut[i] = fopen(file_name[i],"wb");
+	int page_num = 0;
+	fwrite(&page_num,sizeof(int),1,fPtr);
 	while(!feof(fIn)) {
 		for (int i = 0; i < 4; i++) {
 			if (i != 2)
@@ -83,7 +89,11 @@ void load::fWork() {
 				page_dec = NULL;
 			}
 		}
+		page_num++;
 	}
+	fseek(fPtr,0L,SEEK_SET);
+	fwrite(&page_num,sizeof(int),1,fPtr);
+	fclose(fPtr);
 	fclose(fIn);
 	for (int i = 0; i < 4; i++)
 		fclose(fOut[i]);
