@@ -14,8 +14,8 @@ public:
 private:
     int *page_int[4];
     double *page_dec;
-    FILE *fIn;
-        FILE *fOut[4];
+    FILE *fIn; //point to the tbl file
+    FILE *fOut[4];
     FILE *fPtr;
     char file_name[4][20];
 };

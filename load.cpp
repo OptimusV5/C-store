@@ -64,7 +64,7 @@ void load::fWork() {
 		fOut[i] = fopen(file_name[i],"wb"); //Four colomn file
 	int page_num = 0;
 	fwrite(&page_num,sizeof(int),1,fPtr);   //Write the first orderkey of every page in the file
-	while(!feof(fIn)) {
+	while(1) {
 		//Allocate memory for arrays
 		for (int i = 0; i < 4; i++) {
 			if (i != 2)
@@ -84,6 +84,7 @@ void load::fWork() {
 			}
 		}
 		page_num++;
+        if(feof(fIn) == true) break;
 	}
 	fseek(fPtr,0L,SEEK_SET);                  //Move the file pointer to the begining of the file
 	fwrite(&page_num,sizeof(int),1,fPtr);     //Writr the amount of page to the file
