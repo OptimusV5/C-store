@@ -43,7 +43,7 @@ void load::fRead() {
 			}
 			num++;
 		}
-	}
+	}  
 }
 
 //Write to the file
@@ -63,13 +63,13 @@ void load::fWork() {
 	for (int i = 0; i < 4; i++)
 		fOut[i] = fopen(file_name[i],"wb"); //Four colomn file
 	int page_num = 0;
-	fwrite(&page_num,sizeof(int),1,fPtr);   //Write the first orderkey of every page in the file
-	while(1) {
+	fwrite(&page_num,sizeof(int),1,fPtr);   //Write the total number of pages
+	while(!feof(fIn)) {
 		//Allocate memory for arrays
 		for (int i = 0; i < 4; i++) {
 			if (i != 2)
 				page_int[i] = new int[2048];
-		}
+	}
 		page_dec = new double[2048];
 		fRead();
 		fWrite();
@@ -83,8 +83,7 @@ void load::fWork() {
 				page_dec = NULL;
 			}
 		}
-		page_num++;
-        if(feof(fIn) == true) break;
+		page_num++; 
 	}
 	fseek(fPtr,0L,SEEK_SET);                  //Move the file pointer to the begining of the file
 	fwrite(&page_num,sizeof(int),1,fPtr);     //Writr the amount of page to the file
