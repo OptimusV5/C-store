@@ -1,11 +1,12 @@
 #include "load.h"
-#include <cstdio>
-
+#include <iostream>
+#include "fileException.h"
+#include "fileOpenException.h" 
 int main() {
     try {
         load *l = new load();
-    } catch (FILE*) {
-        printf("File orders.tbl not found!\n");
+    } catch (FileOpenException& f) {
+        f.print();
     }
     return 0;
 }

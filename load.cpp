@@ -1,6 +1,6 @@
 #include "load.h"
 #include <cstring>
-
+#include "fileOpenException.h"
 load::load() {
     //Name the four colomn file
     strcpy(file_name[0] , "orderkey.fjl");
@@ -58,8 +58,9 @@ void load::fWrite() {
 
 //Work!!
 void load::fWork() {
-    if ((fIn = fopen("orders.tbl","rt")) == NULL)
-        throw fIn;
+    if ((fIn = fopen("orders.tbl","rt")) == NULL) {
+        throw FileOpenException("orders.tbl");
+    }
     fPtr = fopen("index.fjl","wb");         //A file to store the information of the colomn table
     for (int i = 0; i < 4; i++)
         fOut[i] = fopen(file_name[i],"wb"); //Four colomn file
