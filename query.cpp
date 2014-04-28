@@ -1,13 +1,11 @@
 #include "query.h"
 
-#include <iostream>
-#include <fstream>
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
 
-using namespace std;
+query::query() {}
 
 query::query(int orderid) {
 	orderkey = orderid;
@@ -35,11 +33,10 @@ query::query(int orderid) {
 }
 
 int query::falseBinSerach() {
-	int low = 0, high = numOfPage - 1; // 查找区间初值
+	int low = 0, high = numOfPage - 1; 
 
-	while (low != high - 1)
-	{
-		int mid = (low + high) / 2; // 查找区间中间位置
+	while (low != high - 1) {
+		int mid = (low + high) / 2; 
 
 		if (orderkey < page_int[mid])
 			high = mid;
@@ -54,119 +51,93 @@ int query::falseBinSerach() {
 }
 
 int query::trueBinSerach() {
-	int low = 0, high = numOfPage - 1; // 查找区间初值
+	int low = 0, high = 2047; 
 
-	while (low <= high)
-	{
-		int mid = (low + high) / 2; // 查找区间中间位置
-		if (orderkey == page_int[mid])
-		{ // 查找成功
+	while (low <= high) {
+		int mid = (low + high) / 2; 
+		if (orderkey == page_int[mid]) { 
 			return mid;
 		}
-		else if (orderkey < page_int[mid])
-		{ // 继续在左半区间进行查找
+		else if (orderkey < page_int[mid]) { 
 			high = mid - 1;
 		}
-		else
-		{ // 继续在右半区间进行查找
+		else { 
 			low = mid + 1;
 		}
 	}
-
-	return -1; // 查找失败
+	return -1; 
 }
 
 
 void query::LocatePage() {
 	int offset = 0;
-	char *buffer = (char*)malloc(sizeof(int));
-
 	page_int = new int[numOfPage];
-
-	for (int i = 0; i < numOfPage; i++) {
-		offset += sizeof(int);
-
-		fseek(fIndex, offset, SEEK_SET);
-		fread(buffer, sizeof(int), 1, fIndex);
-
-		page_int[i] = atoi(buffer);
-	}
-
+    fread(page_int, sizeof(int), numOfPage, fIndex);
 	int temp = falseBinSerach();
 	offsetOfKey = 2048 * sizeof(int)* temp;
-
-	free(buffer);
-	delete page_int;
+	delete []page_int;                                        //page_int is an array
 }
 
 void query::LocateOrderkey() {
-	if (offsetOfKey == 2048 * sizeof(int)* (numOfPage - 1)) {
-		page_int = new int[(sizeof(fIn[0]) / sizeof(int)) % 2048];
-		fread(page_int, sizeof(int), (sizeof(fIn[0]) / sizeof(int)) % 2048, fIn[0]);
+	page_int = new int[2048];
+	int temp = -1;
+	if (offsetOfKey == 2048 * sizeof(int) * (numOfPage - 1)) { //The last page should use Traversal method
+		for (int i = 0; i < 2048; i++)
+			page_int[i] = -1;
+		fread(page_int, sizeof(int), 2048, fIn[0]);
+		for (int i = 0; i < 2048; i++) {
+			if (page_int[i] == orderkey)
+				temp = i;
+		}
 	}
 	else {
-		page_int = new int[2048];
 		fread(page_int, sizeof(int), 2048, fIn[0]);
+		temp = trueBinSerach();
 	}
-
-	int temp = trueBinSerach();
-	
 	if (temp == -1)
 		offsetOfKey = -1;
 	else
-		offsetOfKey += temp;
+		offsetOfKey += temp * sizeof(int);                    //sizeof(int) must be mutiplied
 
-	delete page_int;
+	delete []page_int;                                        //page_int is an array
 }
 
 void query::Query() {
-	fIndex = fopen("index.fjl", "rt");
-
-	char *buffer = (char*)malloc(sizeof(int));
-
-	fread(buffer, sizeof(int), 1, fIndex);
-
-	numOfPage = atoi(buffer);
+	fIndex = fopen("index.fjl", "rb");              //open with "rb" !
+	fread(&numOfPage, sizeof(int), 1, fIndex);
 
 	LocatePage();									//Locate which page the orderkey in
 
-	fIn[0] = fopen(file_name[0], "rt");
+	fIn[0] = fopen(file_name[0], "rb");
 	fseek(fIn[0], offsetOfKey, SEEK_SET);			//move ptr to THE PAGE
 
 	LocateOrderkey();								//Locate where the orderkey is
 
 	if (offsetOfKey == -1) {
-		cout << "The result of this query is:\n"
-			<< "I can't find " << orderkey << "in order.tbl." << endl;
+		printf("Can not find %d in orders.tbl\n", orderkey);
 	}
 	else {
 		fseek(fIn[0], offsetOfKey, SEEK_SET);				//move ptrs to THE PLACE
 
 		for (int i = 1; i < 4; i++) {
 			if (i != 2) {
-				fIn[i] = fopen(file_name[i], "rt");
+				fIn[i] = fopen(file_name[i], "rb");
 				fseek(fIn[i], offsetOfKey, SEEK_CUR);
 			}
 		}
 
-		fDec = fopen("shippriority.fjl", "rt");
+		fDec = fopen("shippriority.fjl", "rb");
 		fseek(fDec, 2 * offsetOfKey, SEEK_CUR);
 
 		for (int i = 0; i < 4; i++) {
 			if (i != 2) {
-				fread(buffer, sizeof(int), 1, fIn[i]);
-				result[i] = atoi(buffer);
+				fread(&result[i], sizeof(int), 1, fIn[i]);
 			}
 		}
 
-		fread(buffer, sizeof(int), 1, fDec);
-		result2 = atof(buffer);
+		fread(&result2, sizeof(double), 1, fDec);
 
-		cout << "The result of this query is :\n"
-			<< "orderkey = " << result[0] << endl
-			<< "custkey = " << result[1] << endl
-			<< "shippriority = " << result2 << endl
-			<< "totalprice = " << result[3] << endl;
+		printf("%10d\t%10d\t%15.2lf\t%10d\n", result[0], result[1], result2, result[3]); //according to the PDF "project cstore"
 	}
 
 	fclose(fIndex);
@@ -174,8 +145,6 @@ void query::Query() {
 
 	for (int i = 0; i < 4; i++)
 		fclose(fIn[i]);
-
-	free(buffer);
 }
 
 query::~query() {

@@ -3,10 +3,10 @@
 
 #include <cstdio>
 
-using namespace std;
 
 class query {
 public:
+    query();
 	query(int orderid);
 
 	virtual void Query();			//query main function
