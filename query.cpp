@@ -32,7 +32,7 @@ query::query(int orderid) {
 	Query();
 }
 
-int query::falseBinSerach() {
+int query::pageBinSerach() {
 	int low = 0, high = numOfPage - 1; 
 
 	while (low != high - 1) {
@@ -50,7 +50,7 @@ int query::falseBinSerach() {
 		return low;
 }
 
-int query::trueBinSerach() {
+int query::keyBinSerach() {
 	int low = 0, high = 2047; 
 
 	while (low <= high) {

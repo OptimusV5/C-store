@@ -10,8 +10,8 @@ public:
 	query(int orderid);
 
 	virtual void Query();			//query main function
-	virtual int falseBinSerach();
-	virtual int trueBinSerach();
+	virtual int pageBinSerach();
+	virtual int keyBinSerach();
 	virtual void LocatePage();		//find orderkey in which page
 	virtual void LocateOrderkey();	//find orderkey in which location
 	~query();
