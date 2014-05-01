@@ -19,11 +19,11 @@ load::load() {
 }
 
 //Read from orders.tbl
-void load::fRead() {
+int load::fRead() {
     char sTemp[200];
     for (int i = 0; i < 2048; i++) {
         if (!fgets(sTemp,200,fIn))    //Get every line of orders.tbl
-            return;
+            return i;
         int num = 0;                  //Count the colomn
         char *temp;
         temp = strtok(sTemp,"|");     //slpit the line
@@ -43,16 +43,17 @@ void load::fRead() {
             }
             num++;
         }
-    }  
+    }
+    return 2048;  
 }
 
 //Write to the file
-void load::fWrite() {
+void load::fWrite(int n) {
     for (int i = 0; i < 4; i++) {
         if (i != 2)
-            fwrite(page_int[i], sizeof(int), 2048, fOut[i]); //Write colomn orderkey, custkey, shippriority
+            fwrite(page_int[i], sizeof(int), n, fOut[i]); //Write colomn orderkey, custkey, shippriority
         else
-            fwrite(page_dec, sizeof(double), 2048, fOut[i]); //Write colomn totalprice
+            fwrite(page_dec, sizeof(double), n, fOut[i]); //Write colomn totalprice
     }
 }
 
@@ -73,8 +74,8 @@ void load::fWork() {
                 page_int[i] = new int[2048];
         }
         page_dec = new double[2048];
-        fRead();
-        fWrite();
+        int n = fRead();
+        fWrite(n);
         //Delete
         for (int i = 0; i < 4; i++) {
             if (i != 2) {

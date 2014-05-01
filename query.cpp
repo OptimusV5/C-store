@@ -73,7 +73,7 @@ void query::LocatePage() {
 	int offset = 0;
 	page_int = new int[numOfPage];
     fread(page_int, sizeof(int), numOfPage, fIndex);
-	int temp = falseBinSerach();
+	int temp = pageBinSerach();
 	offsetOfKey = 2048 * sizeof(int)* temp;
 	delete []page_int;                                        //page_int is an array
 }
@@ -92,7 +92,7 @@ void query::LocateOrderkey() {
 	}
 	else {
 		fread(page_int, sizeof(int), 2048, fIn[0]);
-		temp = trueBinSerach();
+		temp = keyBinSerach();
 	}
 	if (temp == -1)
 		offsetOfKey = -1;

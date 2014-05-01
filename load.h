@@ -5,8 +5,8 @@
 class load {
 public:
     load();
-    virtual void fRead();
-    virtual void fWrite();
+    virtual int fRead();
+    virtual void fWrite(int);
     //virtual void fSeek(int);
     virtual void fWork();
     //virtual void RLE(char*) = 0;
