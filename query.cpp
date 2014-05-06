@@ -24,10 +24,10 @@ query::query(int orderid) {
 	fIndex = NULL;
 	fDec = NULL;
 
-	strcpy(file_name[0], "orderkey.fjl");
-	strcpy(file_name[1], "custkey.fjl");
-	strcpy(file_name[2], "shippriority.fjl");
-	strcpy(file_name[3], "totalprice.fjl");
+	strcpy(file_name[0], "bin/orderkey.fjl");
+	strcpy(file_name[1], "bin/custkey.fjl");
+	strcpy(file_name[2], "bin/shippriority.fjl");
+	strcpy(file_name[3], "bin/totalprice.fjl");
 
 	Query();
 }
@@ -103,7 +103,7 @@ void query::LocateOrderkey() {
 }
 
 void query::Query() {
-	fIndex = fopen("index.fjl", "rb");              //open with "rb" !
+	fIndex = fopen("bin/index.fjl", "rb");              //open with "rb" !
 	fread(&numOfPage, sizeof(int), 1, fIndex);
 
 	LocatePage();									//Locate which page the orderkey in
@@ -126,7 +126,7 @@ void query::Query() {
 			}
 		}
 
-		fDec = fopen("shippriority.fjl", "rb");
+		fDec = fopen(file_name[2], "rb");
 		fseek(fDec, 2 * offsetOfKey, SEEK_CUR);
 
 		for (int i = 0; i < 4; i++) {
@@ -139,11 +139,11 @@ void query::Query() {
 
 		printf("%10d\t%10d\t%15.2lf\t%10d\n", result[0], result[1], result2, result[3]); //according to the PDF "project cstore"
 	}
-
+	
 	fclose(fIndex);
 	fclose(fDec);
-
 	for (int i = 0; i < 4; i++)
+                if(i != 2)
 		fclose(fIn[i]);
 }
 

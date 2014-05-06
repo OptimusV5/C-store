@@ -17,6 +17,6 @@ private:
     FILE *fIn;
     FILE *fOut[4];
     FILE *fPtr;
-    char file_name[4][20];
+    char file_name[4][40];
 };
 #endif

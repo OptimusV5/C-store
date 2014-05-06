@@ -1,12 +1,14 @@
 #include "load.h"
+#include <cstdio>
 #include <cstring>
 #include "fileOpenException.h"
 load::load() {
     //Name the four colomn file
-    strcpy(file_name[0] , "orderkey.fjl");
-    strcpy(file_name[1] , "custkey.fjl");
-    strcpy(file_name[2] , "shippriority.fjl");
-    strcpy(file_name[3] , "totalprice.fjl");
+    strcpy(file_name[0] , "bin/orderkey.fjl");
+    strcpy(file_name[1] , "bin/custkey.fjl");
+    strcpy(file_name[2] , "bin/shippriority.fjl");
+    strcpy(file_name[3] , "bin/totalprice.fjl");
+    
     //Initialize 
     for (int i = 0; i < 4; i++) {
         page_int[i] = NULL;
@@ -14,7 +16,7 @@ load::load() {
     }
     page_dec = NULL;
     fIn = NULL;
-    fPtr = NULL;    
+    fPtr = NULL;  
     fWork();
 }
 
@@ -62,7 +64,7 @@ void load::fWork() {
     if ((fIn = fopen("orders.tbl","rt")) == NULL) {
         throw FileOpenException("orders.tbl");
     }
-    fPtr = fopen("index.fjl","wb");         //A file to store the information of the colomn table
+    fPtr = fopen("bin/index.fjl","wb");          //A file to store the information of the colomn table
     for (int i = 0; i < 4; i++)
         fOut[i] = fopen(file_name[i],"wb"); //Four colomn file
     int page_num = 0;

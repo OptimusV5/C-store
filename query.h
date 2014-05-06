@@ -29,7 +29,7 @@ private:
 	FILE *fIn[4];					//open orderkey, custkey, totalprice's .fjl
 	FILE *fDec;						//open shippriority.fjl
 
-	char file_name[4][20];	//fourkey's name
+	char file_name[4][40];	//fourkey's name
 	
 };
 
