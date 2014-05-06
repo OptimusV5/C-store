@@ -1,7 +1,7 @@
 VPATH = src
 
 db : main.o fileException.o fileOpenException.o load.o query.o
-	g++ -o db main.o fileException.o fileOpenException.o load.o query.o
+	g++ -o bin/db main.o fileException.o fileOpenException.o load.o query.o
 
 main.o : main.cpp load.h query.h fileException.h fileOpenException.h
 	g++ -c src/main.cpp 
@@ -15,4 +15,4 @@ fileException.o : fileException.h fileException.cpp
 	g++ -c src/fileException.cpp 
 
 clean :
-	rm db main.o fileException.o fileOpenException.o load.o query.o
+	rm bin/db main.o fileException.o fileOpenException.o load.o query.o
