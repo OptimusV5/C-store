@@ -24,10 +24,10 @@ query::query(int orderid) {
 	fIndex = NULL;
 	fDec = NULL;
 
-	strcpy(file_name[0], "bin/orderkey.fjl");
-	strcpy(file_name[1], "bin/custkey.fjl");
-	strcpy(file_name[2], "bin/shippriority.fjl");
-	strcpy(file_name[3], "bin/totalprice.fjl");
+	strcpy(file_name[0], "orderkey.fjl");
+	strcpy(file_name[1], "custkey.fjl");
+	strcpy(file_name[2], "shippriority.fjl");
+	strcpy(file_name[3], "totalprice.fjl");
 
 	Query();
 }
@@ -103,7 +103,7 @@ void query::LocateOrderkey() {
 }
 
 void query::Query() {
-	fIndex = fopen("bin/index.fjl", "rb");              //open with "rb" !
+	fIndex = fopen("index.fjl", "rb");              //open with "rb" !
 	fread(&numOfPage, sizeof(int), 1, fIndex);
 
 	LocatePage();									//Locate which page the orderkey in
