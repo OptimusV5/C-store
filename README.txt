@@ -1,0 +1,2 @@
+    源代码共分为9个文件，其中，fileException文件为一文件异常类；fileOpenException文件继承fileException类，标示为文件打开异常；load文件主要执行数据的读入；query文件主要执行数据的查询；而main函数则处理其它函数执行过程中抛出的异常。
+    所有的代码都存放在src目录中，执行make命令后，编译器将会分别把main、load、query、fileException、fileOpenException编译链接为main.o、load.o、query.o、fileException.o、fileOpenException.o文件，并最终将这些.o文件编译链接为db文件。在bin目录下，执行命令db load orders，程序将把数据库以列存储方式导入并存储；执行db retrieve orders命令后，输入要查询的orderkey并以换行符为分隔，以EOF为结束，系统将查询匹配的orderkey的记录并予以显示。
